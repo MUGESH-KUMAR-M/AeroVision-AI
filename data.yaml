@@ -1,0 +1,22 @@
+# AeroVision AI - NEU-DET Dataset Configuration
+# Aircraft Surface Defect Detection
+
+path: NEU-DET
+train: train/images
+val: test/images
+test: test/images
+
+# Number of classes
+nc: 6
+
+# Class names - Mapped from NEU-DET to Aircraft Defects
+names:
+  0: crack          # Crazing → Aircraft cracks/fractures
+  1: inclusion      # Inclusions → Foreign material inclusions
+  2: corrosion      # Patches → Corrosion/coating damage
+  3: surface_wear   # Pitted surface → Surface wear/erosion
+  4: delamination   # Rolled-in scale → Material delamination
+  5: scratch        # Scratches → Surface scratches
+
+# Download script (optional)
+# download: https://github.com/Marfbin/NEU-DET-with-yolov8/releases/download/NEU-DET/NEU-DET.zip
