@@ -6,193 +6,180 @@
     <title>AeroVision AI - Aircraft Defect Detection</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --black: #111111;
+            --white: #ffffff;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--white);
+            color: var(--black);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .page {
+            max-width: 960px;
+            margin: 0 auto;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--gray-200);
+            border-right: 1px solid var(--gray-200);
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding: 14px 28px;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--white);
+            font-size: 13px;
+            color: var(--gray-600);
         }
 
-        .icon-inline {
-            margin-right: 8px;
-            width: 1.1em;
-            text-align: center;
+        .model-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
         }
 
-        .icon-lg {
-            font-size: 48px;
-            color: #667eea;
-            margin-bottom: 15px;
-        }
+        .model-status.ready { color: var(--black); }
+        .model-status.not-ready { color: var(--gray-600); }
 
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 900px;
-            width: 100%;
-            overflow: hidden;
+        .upload-area.disabled {
+            opacity: 0.55;
+            pointer-events: none;
+            cursor: not-allowed;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
+            padding: 48px 28px 40px;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--black);
+            color: var(--white);
         }
 
         .header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 12px;
         }
 
-        .header h1 .brand-icon {
-            font-size: 36px;
-            opacity: 0.95;
-        }
-
         .header p {
-            opacity: 0.9;
-            font-size: 16px;
+            margin-top: 8px;
+            font-size: 15px;
+            color: #d1d5db;
+            font-weight: 400;
         }
 
         .content {
-            padding: 40px 30px;
-        }
-
-        .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 50px 30px;
-            text-align: center;
-            background: #f8f9ff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .upload-area:hover {
-            border-color: #764ba2;
-            background: #f0f2ff;
-        }
-
-        .upload-area.dragover {
-            border-color: #764ba2;
-            background: #e8ebff;
-            transform: scale(1.02);
-        }
-
-        .upload-text h3 {
-            color: #333;
-            margin-bottom: 8px;
-            font-size: 20px;
-        }
-
-        .upload-text p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        .upload-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .upload-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .upload-btn:active {
-            transform: translateY(0);
-        }
-
-        .file-input {
-            display: none;
+            flex: 1;
+            padding: 32px 28px;
+            background: var(--white);
         }
 
         .info-box {
-            background: #e7f3ff;
-            border-left: 4px solid #2196F3;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
+            border: 1px solid var(--gray-200);
+            border-left: 3px solid var(--black);
+            padding: 14px 16px;
+            margin-bottom: 24px;
             font-size: 14px;
-            color: #1565c0;
+            color: var(--gray-600);
             display: flex;
+            gap: 12px;
             align-items: flex-start;
-            gap: 10px;
+            background: var(--gray-100);
         }
 
-        .info-box i {
-            margin-top: 2px;
-            font-size: 16px;
+        .info-box i { color: var(--black); margin-top: 2px; }
+
+        .upload-area {
+            border: 2px dashed var(--gray-200);
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: var(--white);
         }
 
-        .defect-types {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 10px;
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: var(--black);
+            background: var(--gray-100);
         }
 
-        .defect-types h4 {
-            margin-bottom: 10px;
-            color: #333;
-            display: flex;
+        .upload-icon {
+            font-size: 40px;
+            color: var(--black);
+            margin-bottom: 16px;
+        }
+
+        .upload-text h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--black);
+        }
+
+        .upload-text p {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 4px;
+        }
+
+        .btn {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
+            background: var(--black);
+            color: var(--white);
+            border: 1px solid var(--black);
+            padding: 11px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.2s, color 0.2s;
         }
 
-        .defect-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px;
+        .btn:hover {
+            background: var(--white);
+            color: var(--black);
         }
 
-        .defect-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px;
-            background: white;
-            border-radius: 5px;
-            font-size: 13px;
+        .btn-outline {
+            background: var(--white);
+            color: var(--black);
         }
 
-        .defect-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 3px;
-            flex-shrink: 0;
+        .btn-outline:hover {
+            background: var(--black);
+            color: var(--white);
         }
+
+        .btn-block { width: 100%; justify-content: center; }
+
+        .file-input { display: none; }
 
         .loading {
             display: none;
             text-align: center;
-            padding: 20px;
+            padding: 32px;
+            border: 1px solid var(--gray-200);
+            margin-top: 24px;
         }
 
         .loading p {
@@ -200,190 +187,176 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            color: #555;
-            margin-top: 10px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--gray-600);
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 2px solid var(--gray-200);
+            border-top: 2px solid var(--black);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.8s linear infinite;
             margin: 0 auto;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
         .status-message {
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
             display: none;
             align-items: center;
             gap: 10px;
+            padding: 14px 16px;
+            margin-top: 20px;
+            font-size: 14px;
+            border: 1px solid var(--gray-200);
         }
 
         .status-message.success {
             display: flex;
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: var(--gray-100);
+            color: var(--black);
+            border-left: 3px solid var(--black);
         }
 
         .status-message.error {
             display: flex;
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: var(--white);
+            color: var(--black);
+            border-left: 3px solid var(--black);
         }
 
-        .footer {
-            background: #f8f9fa;
-            padding: 20px 30px;
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .footer p {
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--black);
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            flex-wrap: wrap;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-200);
         }
 
-        .footer .sep {
-            color: #ccc;
+        .defect-types {
+            margin-top: 40px;
         }
 
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .content {
-                padding: 20px;
-            }
-
-            .upload-area {
-                padding: 30px 20px;
-            }
-
-            .defect-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .defect-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1px;
+            background: var(--gray-200);
+            border: 1px solid var(--gray-200);
         }
 
-        .nav-bar {
-            background: #f8f9fa;
-            padding: 15px 30px;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .model-status {
-            font-size: 12px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .model-status.ready {
-            color: #28a745;
-        }
-
-        .model-status.not-ready {
-            color: #dc3545;
-        }
-
-        .stats-bar {
-            font-size: 12px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .stats-bar span {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .result-title {
+        .defect-item {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 15px;
-            color: #333;
+            padding: 12px 14px;
+            background: var(--white);
+            font-size: 13px;
+            color: var(--black);
         }
 
-        .result-title i {
-            color: #28a745;
+        .defect-swatch {
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--gray-200);
+            flex-shrink: 0;
         }
 
-        .no-defects {
-            color: #666;
+        .result-panel {
+            margin-top: 32px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .result-panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 600;
+            font-size: 15px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            background: var(--gray-100);
         }
 
-        .no-defects i {
-            color: #28a745;
+        .result-panel-body { padding: 20px; }
+
+        .result-panel img {
+            width: 100%;
+            display: block;
+            border: 1px solid var(--gray-200);
+        }
+
+        .result-meta {
+            margin-top: 20px;
+            padding: 16px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            font-size: 14px;
+        }
+
+        .result-meta ul {
+            margin: 12px 0 0 20px;
+            color: var(--gray-600);
+        }
+
+        .footer {
+            padding: 20px 28px;
+            border-top: 1px solid var(--gray-200);
+            font-size: 12px;
+            color: var(--gray-400);
+            text-align: center;
+            background: var(--gray-100);
+        }
+
+        @media (max-width: 600px) {
+            .header { padding: 32px 20px; }
+            .content { padding: 24px 20px; }
+            .header h1 { font-size: 22px; }
+            .defect-grid { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="nav-bar">
+    <div class="page">
+        <div class="topbar">
             <div class="model-status not-ready" id="modelStatus">
                 <i class="fas fa-spinner fa-spin"></i>
                 <span>Checking model...</span>
             </div>
-            <div class="stats-bar">
-                <span><i class="fas fa-upload"></i> <span id="statsUploads">0</span> uploads</span>
-                <span><i class="fas fa-image"></i> <span id="statsResults">0</span> results</span>
-            </div>
         </div>
 
-        <div class="header">
-            <h1>
-                <i class="fas fa-plane brand-icon"></i>
-                AeroVision AI
-            </h1>
+        <header class="header">
+            <h1><i class="fas fa-plane"></i> AeroVision AI</h1>
             <p>AI-Powered Aircraft Surface Defect Detection</p>
-        </div>
+        </header>
 
-        <div class="content">
+        <main class="content">
             <div class="info-box">
                 <i class="fas fa-crosshairs"></i>
-                <div>
-                    <strong>Detects:</strong> Cracks, Corrosion, Scratches, Surface Wear, Inclusions, Delamination
-                </div>
+                <div><strong>Detects:</strong> Cracks, Corrosion, Scratches, Surface Wear, Inclusions, Delamination</div>
             </div>
 
             <form id="uploadForm" enctype="multipart/form-data">
-                <div class="upload-area" id="uploadArea">
+                <div class="upload-area disabled" id="uploadArea">
                     <input type="file" id="fileInput" class="file-input" accept="image/*">
-                    <div class="icon-lg"><i class="fas fa-cloud-arrow-up"></i></div>
+                    <div class="upload-icon"><i class="fas fa-cloud-arrow-up"></i></div>
                     <div class="upload-text">
                         <h3>Upload Aircraft Image</h3>
-                        <p>Click to select or drag & drop</p>
-                        <p style="font-size: 12px; color: #999;">JPG, PNG, BMP &middot; Max 16MB</p>
-                        <button type="button" class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                            <i class="fas fa-folder-open"></i>
-                            Select File
+                        <p>Click to select or drag and drop</p>
+                        <p>JPG, PNG, BMP &middot; Max 16MB</p>
+                        <button type="button" class="btn" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-folder-open"></i> Select File
                         </button>
                     </div>
                 </div>
@@ -395,49 +368,24 @@
             </div>
 
             <div class="status-message" id="statusMessage"></div>
-
             <div id="resultContainer"></div>
 
-            <div class="defect-types">
-                <h4><i class="fas fa-palette"></i> Defect Color Legend</h4>
+            <section class="defect-types">
+                <h2 class="section-title"><i class="fas fa-palette"></i> Defect Color Legend</h2>
                 <div class="defect-grid">
-                    <div class="defect-item">
-                        <div class="defect-color" style="background: rgb(0, 0, 255);"></div>
-                        <span>Crack</span>
-                    </div>
-                    <div class="defect-item">
-                        <div class="defect-color" style="background: rgb(0, 165, 255);"></div>
-                        <span>Corrosion</span>
-                    </div>
-                    <div class="defect-item">
-                        <div class="defect-color" style="background: rgb(255, 255, 0);"></div>
-                        <span>Scratch</span>
-                    </div>
-                    <div class="defect-item">
-                        <div class="defect-color" style="background: rgb(0, 255, 255);"></div>
-                        <span>Surface Wear</span>
-                    </div>
-                    <div class="defect-item">
-                        <div class="defect-color" style="background: rgb(255, 0, 255);"></div>
-                        <span>Inclusion</span>
-                    </div>
-                    <div class="defect-item">
-                        <div class="defect-color" style="background: rgb(255, 100, 0);"></div>
-                        <span>Delamination</span>
-                    </div>
+                    <div class="defect-item"><span class="defect-swatch" style="background:#0000ff;"></span> Crack</div>
+                    <div class="defect-item"><span class="defect-swatch" style="background:#00a5ff;"></span> Corrosion</div>
+                    <div class="defect-item"><span class="defect-swatch" style="background:#ffff00;"></span> Scratch</div>
+                    <div class="defect-item"><span class="defect-swatch" style="background:#00ffff;"></span> Surface Wear</div>
+                    <div class="defect-item"><span class="defect-swatch" style="background:#ff00ff;"></span> Inclusion</div>
+                    <div class="defect-item"><span class="defect-swatch" style="background:#ff6400;"></span> Delamination</div>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
 
-        <div class="footer">
-            <p>
-                <i class="fas fa-microchip"></i> YOLOv8
-                <span class="sep">|</span>
-                <i class="fas fa-database"></i> NEU-DET Dataset
-                <span class="sep">|</span>
-                <i class="fas fa-industry"></i> Aerospace Vertical
-            </p>
-        </div>
+        <footer class="footer">
+            YOLOv8 &middot; NEU-DET Dataset &middot; Aerospace Inspection
+        </footer>
     </div>
 
     <script>
@@ -446,30 +394,29 @@
         const loadingIndicator = document.getElementById('loadingIndicator');
         const statusMessage = document.getElementById('statusMessage');
         const resultContainer = document.getElementById('resultContainer');
+        let modelReady = false;
 
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('dragover');
         });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
                 handleFileSelect();
             }
         });
-
         fileInput.addEventListener('change', handleFileSelect);
 
         function handleFileSelect() {
-            if (fileInput.files.length === 0) return;
+            if (!modelReady) {
+                showError('Model not trained yet. Wait for training to finish, then restart python app.py');
+                return;
+            }
+            if (!fileInput.files.length) return;
             const formData = new FormData();
             formData.append('image', fileInput.files[0]);
             uploadImage(formData);
@@ -480,67 +427,60 @@
             statusMessage.style.display = 'none';
             resultContainer.innerHTML = '';
 
-            fetch('/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                loadingIndicator.style.display = 'none';
-                if (data.error) {
-                    showError(data.error);
-                } else {
-                    showSuccess(data.message);
-                    displayResult(data.result);
-                    updateStats();
-                }
-            })
-            .catch(error => {
-                loadingIndicator.style.display = 'none';
-                showError('Upload failed: ' + error.message);
-            });
+            fetch('/upload', { method: 'POST', body: formData })
+                .then(async (r) => {
+                    let data = {};
+                    try { data = await r.json(); } catch (_) {}
+                    return { ok: r.ok, status: r.status, data };
+                })
+                .then(({ ok, status, data }) => {
+                    loadingIndicator.style.display = 'none';
+                    if (!ok || data.error) {
+                        const msg = data.error || (status === 503
+                            ? 'Model not ready. Finish training and restart the app.'
+                            : 'Upload failed');
+                        showError(msg);
+                    } else {
+                        showSuccess(data.message);
+                        displayResult(data.result);
+                    }
+                })
+                .catch(() => {
+                    loadingIndicator.style.display = 'none';
+                    showError('Upload failed. Check your connection.');
+                });
         }
 
         function displayResult(result) {
-            const html = `
-                <div style="margin-top: 30px;">
-                    <h3 class="result-title">
-                        <i class="fas fa-circle-check"></i>
-                        Detection Results
-                    </h3>
-                    <img src="${result.image}" alt="Detection result" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-
-                    <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-                        <p style="margin-bottom: 10px;"><strong>Total Defects Detected:</strong> ${result.count}</p>
-                        ${result.defects.length > 0 ? `
-                            <div style="background: white; padding: 10px; border-radius: 5px;">
-                                <strong>Breakdown:</strong>
-                                <ul style="margin-top: 10px; margin-left: 20px;">
-                                    ${result.defects.map(d => `<li>${d.type}: <strong>${d.confidence}</strong></li>`).join('')}
-                                </ul>
-                            </div>
-                        ` : '<p class="no-defects"><i class="fas fa-shield-halved"></i> No defects detected</p>'}
+            resultContainer.innerHTML = `
+                <div class="result-panel">
+                    <div class="result-panel-header">
+                        <i class="fas fa-circle-check"></i> Detection Results
                     </div>
-
-                    <button type="button" class="upload-btn" style="margin-top: 20px; width: 100%; justify-content: center;" onclick="resetForm()">
-                        <i class="fas fa-rotate-right"></i>
-                        Analyze Another Image
-                    </button>
-                </div>
-            `;
-            resultContainer.innerHTML = html;
+                    <div class="result-panel-body">
+                        <img src="${result.image}" alt="Detection result">
+                        <div class="result-meta">
+                            <p><strong>Total defects:</strong> ${result.count}</p>
+                            ${result.defects.length ? `
+                                <strong>Breakdown</strong>
+                                <ul>${result.defects.map(d => `<li>${d.type}: ${d.confidence}</li>`).join('')}</ul>
+                            ` : '<p style="margin-top:8px;color:#4b5563;">No defects detected.</p>'}
+                        </div>
+                        <button type="button" class="btn btn-block" style="margin-top:20px;" onclick="resetForm()">
+                            <i class="fas fa-rotate-right"></i> Analyze Another Image
+                        </button>
+                    </div>
+                </div>`;
         }
 
-        function showSuccess(message) {
+        function showSuccess(msg) {
             statusMessage.className = 'status-message success';
-            statusMessage.innerHTML = '<i class="fas fa-circle-check"></i><span>' + message + '</span>';
-            statusMessage.style.display = 'flex';
+            statusMessage.innerHTML = `<i class="fas fa-circle-check"></i><span>${msg}</span>`;
         }
 
-        function showError(error) {
+        function showError(msg) {
             statusMessage.className = 'status-message error';
-            statusMessage.innerHTML = '<i class="fas fa-circle-xmark"></i><span>' + error + '</span>';
-            statusMessage.style.display = 'flex';
+            statusMessage.innerHTML = `<i class="fas fa-circle-xmark"></i><span>${msg}</span>`;
         }
 
         function resetForm() {
@@ -549,33 +489,30 @@
             statusMessage.style.display = 'none';
         }
 
-        function updateStats() {
-            fetch('/api/stats')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('statsUploads').textContent = data.uploads;
-                    document.getElementById('statsResults').textContent = data.results;
-                });
+        function setUploadEnabled(enabled) {
+            modelReady = enabled;
+            uploadArea.classList.toggle('disabled', !enabled);
+            fileInput.disabled = !enabled;
         }
 
         function checkModelStatus() {
             fetch('/api/model-info')
-                .then(response => response.json())
+                .then(r => r.json())
                 .then(data => {
-                    const statusEl = document.getElementById('modelStatus');
+                    const el = document.getElementById('modelStatus');
                     if (data.status === 'loaded') {
-                        statusEl.className = 'model-status ready';
-                        statusEl.innerHTML = '<i class="fas fa-circle-check"></i><span>Model Ready</span>';
+                        setUploadEnabled(true);
+                        el.className = 'model-status ready';
+                        el.innerHTML = '<i class="fas fa-circle-check"></i><span>Model Ready</span>';
                     } else {
-                        statusEl.className = 'model-status not-ready';
-                        statusEl.innerHTML = '<i class="fas fa-triangle-exclamation"></i><span>Model Not Trained</span>';
+                        setUploadEnabled(false);
+                        el.className = 'model-status not-ready';
+                        el.innerHTML = '<i class="fas fa-triangle-exclamation"></i><span>Model training in progress — upload disabled until training completes</span>';
                     }
                 });
         }
 
         checkModelStatus();
-        updateStats();
-        setInterval(updateStats, 5000);
     </script>
 </body>
 </html>

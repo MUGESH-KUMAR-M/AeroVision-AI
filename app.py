@@ -26,7 +26,9 @@ Path('static/results').mkdir(parents=True, exist_ok=True)
 MODEL_CANDIDATES = [
     "runs/aerovision/aerovision_v1/weights/best.pt",
     "runs/train1/weights/best.pt",
+    "runs/train1/weights/last.pt",
     "runs/train/weights/best.pt",
+    "runs/train/weights/last.pt",
 ]
 
 MODEL_PATH = next((p for p in MODEL_CANDIDATES if os.path.exists(p)), MODEL_CANDIDATES[0])
@@ -113,6 +115,11 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload_file():
     """Handle file upload and detection"""
+    if not model:
+        return jsonify({
+            'error': 'Model not loaded. Training is still in progress — wait for best.pt, then restart the app.'
+        }), 503
+
     # Check if file present
     if 'image' not in request.files:
         return jsonify({'error': 'No file uploaded'}), 400
@@ -135,7 +142,8 @@ def upload_file():
         result, error = process_image(filepath)
         
         if error:
-            return jsonify({'error': error}), 500
+            code = 503 if not model else 500
+            return jsonify({'error': error}), code
         
         return jsonify({
             'success': True,

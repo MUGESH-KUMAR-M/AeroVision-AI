@@ -7,7 +7,7 @@ from pathlib import Path
 
 from ultralytics import YOLO
 
-DEFAULT_WEIGHTS = "runs/aerovision/aerovision_v1/weights/best.pt"
+DEFAULT_WEIGHTS = "runs/train1/weights/best.pt"
 
 
 def parse_args():
